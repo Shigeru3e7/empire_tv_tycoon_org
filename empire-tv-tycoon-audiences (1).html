@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Empire TV Tycoon — Audiences &amp; Genres</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0e0e0f;
+  --bg2: #161618;
+  --bg3: #1e1e22;
+  --border: #2a2a30;
+  --gold: #c9a84c;
+  --gold2: #e8c97a;
+  --red: #c0392b;
+  --green: #27ae60;
+  --blue: #2980b9;
+  --text: #e8e6e0;
+  --text2: #9b9790;
+  --text3: #6b6966;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 300;
+  line-height: 1.6;
+  min-height: 100vh;
+  padding: 3rem 1.5rem 6rem;
+}
+
+.wrap { max-width: 920px; margin: 0 auto; }
+
+h1 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: clamp(1.6rem, 4vw, 2.2rem);
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 0.4rem;
+}
+
+.subtitle {
+  font-size: 0.85rem;
+  color: var(--text3);
+  margin-bottom: 2.5rem;
+  font-family: 'DM Mono', monospace;
+  letter-spacing: 0.04em;
+}
+
+h2 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text);
+  margin: 2.5rem 0 1rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid var(--border);
+}
+
+p.hint { font-size: 0.83rem; color: var(--text2); margin-bottom: 1rem; }
+
+/* Card */
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 1.25rem 1.5rem;
+}
+
+/* Audience selectors */
+.audience-rows { display: flex; flex-direction: column; gap: 0.6rem; }
+
+.audience-row { display: flex; gap: 0.6rem; align-items: center; }
+
+select {
+  flex: 1;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.88rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+select:focus, .btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 1px; }
+
+.btn-remove {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--text2);
+  width: 38px; height: 38px;
+  border-radius: 2px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  flex-shrink: 0;
+}
+.btn-remove:hover:not(:disabled) { color: var(--red); border-color: var(--red); }
+.btn-remove:disabled { opacity: 0.3; cursor: not-allowed; }
+
+.row-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; }
+
+.btn-add {
+  background: rgba(201,168,76,0.08);
+  border: 1px solid rgba(201,168,76,0.3);
+  color: var(--gold2);
+  padding: 0.55rem 1.1rem;
+  border-radius: 2px;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-family: 'DM Sans', sans-serif;
+}
+.btn-add:hover:not(:disabled) { background: rgba(201,168,76,0.15); }
+.btn-add:disabled { opacity: 0.3; cursor: not-allowed; }
+
+.count-hint { font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--text3); letter-spacing: 0.06em; }
+
+/* Legend */
+.legend { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; margin-top: 1.1rem; }
+.legend-item { display: flex; align-items: center; gap: 0.4rem; font-size: 0.76rem; color: var(--text3); font-family: 'DM Mono', monospace; }
+.legend-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+
+/* Badges */
+.badge {
+  display: inline-block;
+  padding: 0.15rem 0.55rem;
+  border-radius: 2px;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+.badge-amazing { background: rgba(201,168,76,0.15); color: var(--gold2); border: 1px solid rgba(201,168,76,0.35); }
+.badge-good    { background: rgba(39,174,96,0.15); color: #5dca8a; border: 1px solid rgba(39,174,96,0.3); }
+.badge-neutral { background: rgba(155,151,144,0.1); color: var(--text2); border: 1px solid var(--border); }
+.badge-bad     { background: rgba(192,57,43,0.15); color: #e07060; border: 1px solid rgba(192,57,43,0.3); }
+
+/* Results */
+.result-list { display: flex; flex-direction: column; gap: 0.6rem; }
+
+.result-row {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 0.9rem 1.25rem;
+}
+
+.result-top { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+
+.result-genre-group { display: flex; align-items: baseline; gap: 0.6rem; flex-wrap: wrap; }
+
+.result-genre { font-size: 0.95rem; font-weight: 600; color: var(--text); }
+
+.bad-count {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  padding: 0.1rem 0.5rem;
+  border-radius: 2px;
+  background: rgba(192,57,43,0.12);
+  color: #e07060;
+  border: 1px solid rgba(192,57,43,0.3);
+}
+
+.result-score {
+  font-family: 'DM Mono', monospace;
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: var(--gold);
+  min-width: 3ch;
+  text-align: right;
+}
+.result-score.negative { color: #e07060; }
+.result-score.zero { color: var(--text2); }
+
+.result-detail { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.55rem; }
+
+.detail-chip {
+  font-size: 0.72rem;
+  font-family: 'DM Mono', monospace;
+  padding: 0.15rem 0.5rem;
+  border-radius: 2px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--text2);
+}
+.detail-chip .aud-name { color: var(--text); font-family: 'DM Sans', sans-serif; margin-right: 0.35rem; }
+
+.disclaimer {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+  margin-top: 0.65rem;
+  padding: 0.55rem 0.8rem;
+  background: rgba(192,57,43,0.08);
+  border: 1px solid rgba(192,57,43,0.2);
+  color: #e08070;
+  border-radius: 2px;
+  font-size: 0.78rem;
+}
+
+/* Directory table */
+.table-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 2px; }
+
+table { width: 100%; border-collapse: collapse; font-size: 0.78rem; min-width: 720px; }
+
+th {
+  text-align: left;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gold);
+  padding: 0.6rem 0.7rem;
+  border-bottom: 1px solid var(--border);
+  font-weight: 400;
+  background: var(--bg2);
+  white-space: nowrap;
+}
+
+td {
+  padding: 0.55rem 0.7rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--text2);
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+tr:last-child td { border-bottom: none; }
+td.genre-name { color: var(--text); font-weight: 500; font-family: 'DM Sans', sans-serif; }
+tr.highlighted td { background: rgba(201,168,76,0.05); }
+
+@media(max-width: 640px) {
+  body { padding: 2rem 1rem 5rem; }
+  .result-score { min-width: auto; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>Empire TV Tycoon</h1>
+  <p class="subtitle">AUDIENCES · GENRES · SCORE DE PRODUCTION</p>
+
+  <h2>Audiences sélectionnées</h2>
+  <p class="hint">Choisissez de 1 à 3 audiences. Les scores ci-dessous sont recalculés automatiquement.</p>
+
+  <div class="card">
+    <div class="audience-rows" id="audience-rows"></div>
+    <div class="row-actions">
+      <button class="btn-add" id="btn-add" onclick="addAudienceRow()">+ Ajouter une audience</button>
+      <span class="count-hint" id="count-hint">1 / 3</span>
+    </div>
+    <div class="legend">
+      <span class="legend-item"><span class="legend-dot" style="background:var(--gold2)"></span> AMAZING = +2</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#5dca8a"></span> Good = +1</span>
+      <span class="legend-item"><span class="legend-dot" style="background:var(--text2)"></span> Neutral = 0</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#e07060"></span> Bad = 0 (compté à part)</span>
+    </div>
+  </div>
+
+  <h2>Résultats par genre</h2>
+  <p class="hint">Classés du meilleur au moins bon total pour les audiences sélectionnées.</p>
+  <div class="result-list" id="result-list"></div>
+
+  <h2>Répertoire complet</h2>
+  <p class="hint">Préférence de chaque audience pour chaque genre.</p>
+  <div class="table-scroll">
+    <table id="directory-table">
+      <thead>
+        <tr id="directory-head"></tr>
+      </thead>
+      <tbody id="directory-body"></tbody>
+    </table>
+  </div>
+
+</div>
+
+<script>
+const AUDIENCES = ["Athletes","Children","Elders","Geeks","Lovers","Men","Rockers","Women"];
+const GENRES = ["Action","Horror","Comedy","Documentary","Drama","Fantasy","Game Show","Musical","Romance","Sci-Fi","Sports","Western"];
+
+// data[genre][audience] = "AMAZING" | "Good" | "Neutral" | "Bad"
+const DATA = {
+  "Action":       {Athletes:"Good", Children:"Neutral", Elders:"Bad", Geeks:"Neutral", Lovers:"Bad", Men:"AMAZING", Rockers:"Good", Women:"Bad"},
+  "Horror":       {Athletes:"Bad", Children:"Bad", Elders:"Neutral", Geeks:"Neutral", Lovers:"Good", Men:"Good", Rockers:"AMAZING", Women:"Neutral"},
+  "Comedy":       {Athletes:"Neutral", Children:"Good", Elders:"Bad", Geeks:"Bad", Lovers:"Neutral", Men:"Neutral", Rockers:"Bad", Women:"AMAZING"},
+  "Documentary":  {Athletes:"Good", Children:"Bad", Elders:"AMAZING", Geeks:"Good", Lovers:"Bad", Men:"Neutral", Rockers:"Neutral", Women:"Neutral"},
+  "Drama":        {Athletes:"Good", Children:"Bad", Elders:"Good", Geeks:"Bad", Lovers:"Good", Men:"Bad", Rockers:"Bad", Women:"AMAZING"},
+  "Fantasy":      {Athletes:"Bad", Children:"AMAZING", Elders:"Bad", Geeks:"AMAZING", Lovers:"Neutral", Men:"Neutral", Rockers:"Good", Women:"Bad"},
+  "Game Show":    {Athletes:"Neutral", Children:"Neutral", Elders:"Good", Geeks:"Bad", Lovers:"Good", Men:"Bad", Rockers:"Neutral", Women:"AMAZING"},
+  "Musical":      {Athletes:"Neutral", Children:"Neutral", Elders:"Neutral", Geeks:"Bad", Lovers:"Good", Men:"Bad", Rockers:"AMAZING", Women:"Good"},
+  "Romance":      {Athletes:"Neutral", Children:"Neutral", Elders:"Good", Geeks:"Bad", Lovers:"AMAZING", Men:"Bad", Rockers:"Bad", Women:"Good"},
+  "Sci-Fi":       {Athletes:"Bad", Children:"Good", Elders:"Bad", Geeks:"AMAZING", Lovers:"Neutral", Men:"Good", Rockers:"Neutral", Women:"Bad"},
+  "Sports":       {Athletes:"AMAZING", Children:"Neutral", Elders:"Neutral", Geeks:"Bad", Lovers:"Neutral", Men:"AMAZING", Rockers:"Bad", Women:"Bad"},
+  "Western":      {Athletes:"Neutral", Children:"Neutral", Elders:"AMAZING", Geeks:"Good", Lovers:"Bad", Men:"Good", Rockers:"Neutral", Women:"Bad"}
+};
+
+const SCORE = { "AMAZING": 2, "Good": 1, "Neutral": 0, "Bad": 0 };
+const BADGE_CLASS = { "AMAZING": "badge-amazing", "Good": "badge-good", "Neutral": "badge-neutral", "Bad": "badge-bad" };
+
+const MIN_ROWS = 1;
+const MAX_ROWS = 3;
+let selected = ["Athletes"];
+
+function buildSelectOptions(currentValue) {
+  return AUDIENCES.map(a => `<option value="${a}" ${a === currentValue ? "selected" : ""}>${a}</option>`).join("");
+}
+
+function renderAudienceRows() {
+  const container = document.getElementById("audience-rows");
+  container.innerHTML = selected.map((val, i) => `
+    <div class="audience-row">
+      <select onchange="updateAudience(${i}, this.value)">
+        ${buildSelectOptions(val)}
+      </select>
+      <button class="btn-remove" onclick="removeAudienceRow(${i})" ${selected.length <= MIN_ROWS ? "disabled" : ""} aria-label="Retirer cette audience">×</button>
+    </div>
+  `).join("");
+
+  document.getElementById("btn-add").disabled = selected.length >= MAX_ROWS;
+  document.getElementById("count-hint").textContent = `${selected.length} / ${MAX_ROWS}`;
+}
+
+function updateAudience(index, value) {
+  selected[index] = value;
+  renderResults();
+}
+
+function addAudienceRow() {
+  if (selected.length >= MAX_ROWS) return;
+  const unused = AUDIENCES.find(a => !selected.includes(a)) || AUDIENCES[0];
+  selected.push(unused);
+  renderAudienceRows();
+  renderResults();
+}
+
+function removeAudienceRow(index) {
+  if (selected.length <= MIN_ROWS) return;
+  selected.splice(index, 1);
+  renderAudienceRows();
+  renderResults();
+}
+
+function renderResults() {
+  const rows = GENRES.map(genre => {
+    const details = selected.map(aud => {
+      const rating = DATA[genre][aud];
+      return { aud, rating, points: SCORE[rating] };
+    });
+    const total = details.reduce((sum, d) => sum + d.points, 0);
+    const badAudiences = details.filter(d => d.rating === "Bad").map(d => d.aud);
+    return { genre, details, total, badAudiences };
+  }).sort((a, b) => b.total - a.total);
+
+  const html = rows.map(r => {
+    const scoreClass = r.total > 0 ? "" : (r.total < 0 ? "negative" : "zero");
+    const scoreText = r.total > 0 ? `+${r.total}` : `${r.total}`;
+    const chips = r.details.map(d => `
+      <span class="detail-chip"><span class="aud-name">${d.aud}</span><span class="badge ${BADGE_CLASS[d.rating]}">${d.rating}</span></span>
+    `).join("");
+    const disclaimer = r.badAudiences.length > 0 ? `
+      <div class="disclaimer">⚠ ${r.badAudiences.length === 1 ? "L'audience " + r.badAudiences[0] + " déteste" : "Les audiences " + r.badAudiences.join(", ") + " détestent"} le genre « ${r.genre} ».
+      </div>
+    ` : "";
+    return `
+      <div class="result-row">
+        <div class="result-top">
+          <div class="result-genre">${r.genre}</div>
+          <div class="result-score ${scoreClass}">${scoreText}</div>
+        </div>
+        <div class="result-detail">${chips}</div>
+        ${disclaimer}
+      </div>
+    `;
+  }).join("");
+
+  document.getElementById("result-list").innerHTML = html;
+}
+
+function renderDirectory() {
+  const head = document.getElementById("directory-head");
+  head.innerHTML = `<th>Genre</th>` + AUDIENCES.map(a => `<th>${a}</th>`).join("");
+
+  const body = document.getElementById("directory-body");
+  body.innerHTML = GENRES.map(genre => {
+    const cells = AUDIENCES.map(aud => {
+      const rating = DATA[genre][aud];
+      return `<td><span class="badge ${BADGE_CLASS[rating]}">${rating}</span></td>`;
+    }).join("");
+    return `<tr><td class="genre-name">${genre}</td>${cells}</tr>`;
+  }).join("");
+}
+
+renderAudienceRows();
+renderResults();
+renderDirectory();
+</script>
+</body>
+</html>
