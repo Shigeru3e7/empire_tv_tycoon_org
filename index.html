@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -69,7 +70,6 @@ h3 {
 
 p.hint { font-size: 0.83rem; color: var(--text2); margin-bottom: 1rem; }
 
-/* Card */
 .card {
   background: var(--bg2);
   border: 1px solid var(--border);
@@ -78,13 +78,16 @@ p.hint { font-size: 0.83rem; color: var(--text2); margin-bottom: 1rem; }
   margin-bottom: 1.5rem;
 }
 
-/* Slot layout */
+/* Slots */
 .slot-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(3, 1fr);
   gap: 1.5rem;
 }
-@media (max-width: 700px) {
+@media (max-width: 900px) {
+  .slot-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 600px) {
   .slot-grid { grid-template-columns: 1fr; }
 }
 
@@ -93,6 +96,8 @@ p.hint { font-size: 0.83rem; color: var(--text2); margin-bottom: 1rem; }
   border: 1px solid var(--border);
   border-radius: 2px;
   padding: 1rem 1.2rem;
+  display: flex;
+  flex-direction: column;
 }
 
 .slot-title {
@@ -105,8 +110,7 @@ p.hint { font-size: 0.83rem; color: var(--text2); margin-bottom: 1rem; }
   font-family: 'DM Mono', monospace;
 }
 
-/* Audience selectors inside slot */
-.audience-rows { display: flex; flex-direction: column; gap: 0.6rem; }
+.audience-rows { display: flex; flex-direction: column; gap: 0.6rem; flex: 1; }
 
 .audience-row { display: flex; gap: 0.6rem; align-items: center; }
 
@@ -136,9 +140,16 @@ select:focus, .btn:focus-visible { outline: 2px solid var(--gold); outline-offse
 .btn-remove:hover:not(:disabled) { color: var(--red); border-color: var(--red); }
 .btn-remove:disabled { opacity: 0.3; cursor: not-allowed; }
 
-.row-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 0.8rem; }
+.row-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.8rem;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
 
-.btn-add, .btn-edit {
+.btn-add, .btn-edit, .btn-toggle {
   background: rgba(201,168,76,0.08);
   border: 1px solid rgba(201,168,76,0.3);
   color: var(--gold2);
@@ -147,15 +158,53 @@ select:focus, .btn:focus-visible { outline: 2px solid var(--gold); outline-offse
   cursor: pointer;
   font-size: 0.78rem;
   font-family: 'DM Sans', sans-serif;
+  transition: all 0.2s;
 }
-.btn-add:hover:not(:disabled), .btn-edit:hover { background: rgba(201,168,76,0.15); }
+.btn-add:hover:not(:disabled), .btn-edit:hover, .btn-toggle:hover {
+  background: rgba(201,168,76,0.15);
+}
 .btn-add:disabled { opacity: 0.3; cursor: not-allowed; }
 
-.count-hint { font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--text3); letter-spacing: 0.06em; }
+.btn-toggle.active {
+  background: rgba(39,174,96,0.15);
+  border-color: #27ae60;
+  color: #5dca8a;
+}
+.btn-toggle.inactive {
+  background: rgba(155,151,144,0.08);
+  border-color: var(--border);
+  color: var(--text2);
+}
+
+.count-hint {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--text3);
+  letter-spacing: 0.06em;
+}
+
+.slot-status {
+  font-size: 0.65rem;
+  color: var(--text3);
+  font-family: 'DM Mono', monospace;
+  margin-left: 0.5rem;
+}
 
 /* Legend */
-.legend { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; margin-top: 1.1rem; }
-.legend-item { display: flex; align-items: center; gap: 0.4rem; font-size: 0.76rem; color: var(--text3); font-family: 'DM Mono', monospace; }
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  margin: 1.5rem 0 0.5rem;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.76rem;
+  color: var(--text3);
+  font-family: 'DM Mono', monospace;
+}
 .legend-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
 
 /* Badges */
@@ -175,32 +224,58 @@ select:focus, .btn:focus-visible { outline: 2px solid var(--gold); outline-offse
 .badge-bad     { background: rgba(192,57,43,0.15); color: #e07060; border: 1px solid rgba(192,57,43,0.3); }
 
 /* Results */
-.result-list { display: flex; flex-direction: column; gap: 0.6rem; }
+.results-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+.results-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+.results-grid.cols-4 { grid-template-columns: repeat(4, 1fr); }
+@media (max-width: 1000px) {
+  .results-grid.cols-4 { grid-template-columns: repeat(2, 1fr); }
+  .results-grid.cols-3 { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px) {
+  .results-grid.cols-4 { grid-template-columns: 1fr; }
+  .results-grid.cols-3 { grid-template-columns: 1fr; }
+}
 
-.result-row {
+.result-col {
   background: var(--bg2);
   border: 1px solid var(--border);
   border-radius: 2px;
-  padding: 0.9rem 1.25rem;
+  padding: 1rem 1.2rem;
 }
 
-.result-top { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+.result-col h3 {
+  margin-top: 0;
+  font-size: 0.85rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.4rem;
+  margin-bottom: 0.8rem;
+}
 
-.result-genre { font-size: 0.95rem; font-weight: 600; color: var(--text); }
+.result-list { display: flex; flex-direction: column; gap: 0.6rem; }
 
-.bad-count {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.68rem;
-  padding: 0.1rem 0.5rem;
+.result-row {
+  background: var(--bg3);
+  border: 1px solid var(--border);
   border-radius: 2px;
-  background: rgba(192,57,43,0.12);
-  color: #e07060;
-  border: 1px solid rgba(192,57,43,0.3);
+  padding: 0.7rem 1rem;
 }
+
+.result-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.result-genre { font-size: 0.9rem; font-weight: 600; color: var(--text); }
 
 .result-score {
   font-family: 'DM Mono', monospace;
-  font-size: 1.05rem;
+  font-size: 1rem;
   font-weight: 500;
   color: var(--gold);
   min-width: 3ch;
@@ -209,30 +284,39 @@ select:focus, .btn:focus-visible { outline: 2px solid var(--gold); outline-offse
 .result-score.negative { color: #e07060; }
 .result-score.zero { color: var(--text2); }
 
-.result-detail { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.55rem; }
+.result-detail {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.4rem;
+}
 
 .detail-chip {
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   font-family: 'DM Mono', monospace;
-  padding: 0.15rem 0.5rem;
+  padding: 0.1rem 0.4rem;
   border-radius: 2px;
-  background: var(--bg3);
+  background: var(--bg2);
   border: 1px solid var(--border);
   color: var(--text2);
 }
-.detail-chip .aud-name { color: var(--text); font-family: 'DM Sans', sans-serif; margin-right: 0.35rem; }
+.detail-chip .aud-name {
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  margin-right: 0.3rem;
+}
 
 .disclaimer {
   display: flex;
   gap: 0.5rem;
   align-items: flex-start;
-  margin-top: 0.65rem;
-  padding: 0.55rem 0.8rem;
+  margin-top: 0.5rem;
+  padding: 0.4rem 0.7rem;
   background: rgba(192,57,43,0.08);
   border: 1px solid rgba(192,57,43,0.2);
   color: #e08070;
   border-radius: 2px;
-  font-size: 0.78rem;
+  font-size: 0.75rem;
 }
 
 /* Table */
@@ -242,13 +326,23 @@ select:focus, .btn:focus-visible { outline: 2px solid var(--gold); outline-offse
   align-items: center;
   flex-wrap: wrap;
   gap: 0.5rem;
-  margin-bottom: 0.5rem;
+  margin-top: 2rem;
 }
 .table-header h2 { margin: 0; }
 
-.table-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 2px; margin-bottom: 1rem; }
+.table-scroll {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  margin-bottom: 1rem;
+}
 
-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; min-width: 1000px; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+  min-width: 1000px;
+}
 
 th {
   text-align: left;
@@ -273,7 +367,11 @@ td {
 }
 
 tr:last-child td { border-bottom: none; }
-td.genre-name { color: var(--text); font-weight: 500; font-family: 'DM Sans', sans-serif; }
+td.genre-name {
+  color: var(--text);
+  font-weight: 500;
+  font-family: 'DM Sans', sans-serif;
+}
 
 td select.edit-select {
   background: var(--bg3);
@@ -288,40 +386,6 @@ td select.edit-select {
   min-width: 80px;
 }
 td select.edit-select:focus { outline: 2px solid var(--gold); outline-offset: 0; }
-
-.results-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 1.5rem;
-}
-@media (max-width: 900px) {
-  .results-grid { grid-template-columns: 1fr 1fr; }
-}
-@media (max-width: 600px) {
-  .results-grid { grid-template-columns: 1fr; }
-}
-
-.result-col {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: 2px;
-  padding: 1rem 1.2rem;
-}
-
-.result-col h3 {
-  margin-top: 0;
-  font-size: 0.85rem;
-  border-bottom: 1px solid var(--border);
-  padding-bottom: 0.4rem;
-  margin-bottom: 0.8rem;
-}
-.result-col .result-list { gap: 0.4rem; }
-.result-col .result-row { padding: 0.5rem 0.8rem; }
-
-@media(max-width: 640px) {
-  body { padding: 2rem 1rem 5rem; }
-  .result-score { min-width: auto; }
-}
 </style>
 </head>
 <body>
@@ -331,10 +395,10 @@ td select.edit-select:focus { outline: 2px solid var(--gold); outline-offset: 0;
   <p class="subtitle">AUDIENCES · GENRES · SCORE DE PRODUCTION</p>
 
   <h2>Slots d'audiences</h2>
-  <p class="hint">Configurez deux slots indépendants (1 à 3 audiences chacun). Les scores sont recalculés en direct.</p>
+  <p class="hint">Configurez jusqu'à 3 slots (1 à 3 audiences chacun). Activez/désactivez le slot 3 selon vos besoins.</p>
 
   <div class="slot-grid" id="slot-container">
-    <!-- Slot 1 et Slot 2 générés par JS -->
+    <!-- généré par JS -->
   </div>
 
   <div class="legend">
@@ -345,12 +409,10 @@ td select.edit-select:focus { outline: 2px solid var(--gold); outline-offset: 0;
   </div>
 
   <h2>Résultats par genre</h2>
-  <p class="hint">Classement pour chaque combinaison de slots.</p>
-  <div class="results-grid" id="results-container">
-    <!-- Trois colonnes générées par JS -->
+  <p class="hint" id="results-hint">Classement pour chaque combinaison de slots actifs.</p>
+  <div class="results-grid cols-3" id="results-container">
+    <!-- généré par JS -->
   </div>
-
-  <br><br>
 
   <div class="table-header">
     <h2>Répertoire complet</h2>
@@ -399,7 +461,6 @@ function loadPreferences() {
   if (saved) {
     try {
       const parsed = JSON.parse(saved);
-      // Vérification basique
       if (parsed && typeof parsed === 'object' && GENRES.every(g => parsed[g])) {
         preferences = parsed;
         return;
@@ -418,8 +479,10 @@ loadPreferences();
 // ---------- Slots ----------
 let slots = [
   ["Athletes"],
-  ["Children"]
+  ["Children"],
+  ["Geeks"]
 ];
+let slot3Enabled = false;
 
 const MIN_ROWS = 1;
 const MAX_ROWS = 3;
@@ -437,6 +500,10 @@ function buildRatingOptions(currentValue) {
 function renderSlots() {
   const container = document.getElementById('slot-container');
   container.innerHTML = slots.map((slot, idx) => {
+    const isSlot3 = idx === 2;
+    const activeClass = slot3Enabled ? 'active' : 'inactive';
+    const toggleLabel = slot3Enabled ? '✅ Slot 3 actif' : '⏸️ Slot 3 inactif';
+
     return `
       <div class="slot-box">
         <div class="slot-title">Slot ${idx+1}</div>
@@ -451,12 +518,23 @@ function renderSlots() {
           `).join('')}
         </div>
         <div class="row-actions">
-          <button class="btn-add" onclick="addAudience(${idx})" ${slot.length >= MAX_ROWS ? "disabled" : ""}>+ Ajouter une audience</button>
+          <button class="btn-add" onclick="addAudience(${idx})" ${slot.length >= MAX_ROWS ? "disabled" : ""}>+ Ajouter</button>
           <span class="count-hint">${slot.length} / ${MAX_ROWS}</span>
         </div>
+        ${isSlot3 ? `
+          <div style="margin-top: 0.8rem; border-top: 1px solid var(--border); padding-top: 0.7rem; display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap;">
+            <button class="btn-toggle ${activeClass}" onclick="toggleSlot3()">${toggleLabel}</button>
+            <span class="slot-status">${slot3Enabled ? 'Inclus dans les calculs' : 'Ignoré dans les calculs'}</span>
+          </div>
+        ` : ''}
       </div>
     `;
   }).join('');
+}
+
+function toggleSlot3() {
+  slot3Enabled = !slot3Enabled;
+  renderAll();
 }
 
 function updateAudience(slotIdx, index, value) {
@@ -501,13 +579,35 @@ function renderResults() {
   const container = document.getElementById('results-container');
   const slot1 = slots[0] || [];
   const slot2 = slots[1] || [];
-  const combined = [...new Set([...slot1, ...slot2])];
+  const slot3 = slots[2] || [];
 
-  const sets = [
-    { label: 'Slot 1 + Slot 2', audiences: combined },
-    { label: 'Slot 1 seulement', audiences: slot1 },
-    { label: 'Slot 2 seulement', audiences: slot2 }
-  ];
+  let sets = [];
+  let gridClass = 'cols-3';
+  let hint = 'Classement pour chaque combinaison de slots actifs.';
+
+  if (slot3Enabled) {
+    const combined123 = [...new Set([...slot1, ...slot2, ...slot3])];
+    sets = [
+      { label: 'Slot 1+2+3', audiences: combined123 },
+      { label: 'Slot 1', audiences: slot1 },
+      { label: 'Slot 2', audiences: slot2 },
+      { label: 'Slot 3', audiences: slot3 }
+    ];
+    gridClass = 'cols-4';
+    hint = 'Slot 3 actif → combinaison 1+2+3 et résultats individuels.';
+  } else {
+    const combined12 = [...new Set([...slot1, ...slot2])];
+    sets = [
+      { label: 'Slot 1+2', audiences: combined12 },
+      { label: 'Slot 1', audiences: slot1 },
+      { label: 'Slot 2', audiences: slot2 }
+    ];
+    gridClass = 'cols-3';
+    hint = 'Slot 3 inactif → combinaison 1+2 et résultats individuels.';
+  }
+
+  container.className = `results-grid ${gridClass}`;
+  document.getElementById('results-hint').textContent = hint;
 
   container.innerHTML = sets.map(set => {
     const results = computeResults(set.audiences);
@@ -560,15 +660,14 @@ function renderDirectory() {
     return `<tr><td class="genre-name">${genre}</td>${cells}</tr>`;
   }).join('');
 
-  // Mise à jour du bouton et du hint
   const btn = document.getElementById('btn-toggle-edit');
   const hint = document.getElementById('table-hint');
   if (isEditing) {
-    btn.textContent = 'Sauvegarder';
+    btn.textContent = '💾 Sauvegarder';
     btn.onclick = saveEditMode;
     hint.textContent = 'Modification en cours. Sélectionnez les nouvelles valeurs puis cliquez sur « Sauvegarder ».';
   } else {
-    btn.textContent = 'Éditer le tableau';
+    btn.textContent = '✏️ Éditer le tableau';
     btn.onclick = enableEditMode;
     hint.textContent = 'Affichage des préférences (badges). Cliquez sur « Éditer le tableau » pour modifier les valeurs.';
   }
@@ -577,8 +676,6 @@ function renderDirectory() {
 function enableEditMode() {
   isEditing = true;
   renderDirectory();
-  // On ne relance pas renderAll() pour ne pas perdre l'état d'édition
-  // mais il faut rafraîchir le tableau seulement
 }
 
 function saveEditMode() {
@@ -590,7 +687,7 @@ function saveEditMode() {
   });
   savePreferences();
   isEditing = false;
-  renderAll(); // repasse en mode lecture et met à jour les résultats
+  renderAll();
 }
 
 // ---------- Rendu global ----------
