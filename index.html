@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -604,16 +603,18 @@ function renderResults() {
     modeLabel = 'Individuel (1,2,3)';
     hint = 'Chaque slot est évalué séparément.';
   } else { // combined
-    const combined12 = [...new Set([...slot1, ...slot2])];
-    const combined23 = [...new Set([...slot2, ...slot3])];
-    const combined123 = [...new Set([...slot1, ...slot2, ...slot3])];
+    // ⚠️ On concatène sans dédupliquer : une audience présente dans plusieurs slots
+    // compte autant de fois qu'elle apparaît.
+    const combined12 = [...slot1, ...slot2];
+    const combined23 = [...slot2, ...slot3];
+    const combined123 = [...slot1, ...slot2, ...slot3];
     sets = [
       { label: 'Slot 1+2', audiences: combined12 },
       { label: 'Slot 2+3', audiences: combined23 },
       { label: 'Slot 1+2+3', audiences: combined123 }
     ];
     modeLabel = 'Combiné (1+2, 2+3, 1+2+3)';
-    hint = 'Combinaisons de slots (union des audiences).';
+    hint = 'Combinaisons de slots (avec doublons comptés).';
   }
 
   // Mise à jour du bouton et hint
@@ -631,8 +632,9 @@ function renderResults() {
       const chips = r.details.map(d => `
         <span class="detail-chip"><span class="aud-name">${d.aud}</span><span class="badge ${BADGE_CLASS[d.rating]}">${d.rating}</span></span>
       `).join("");
-      const disclaimer = r.badAudiences.length > 0 ? `
-        <div class="disclaimer">⚠ ${r.badAudiences.length === 1 ? "L'audience " + r.badAudiences[0] + " déteste" : "Les audiences " + r.badAudiences.join(", ") + " détestent"} le genre « ${r.genre} ».</div>
+      const badCount = r.badAudiences.length;
+      const disclaimer = badCount > 0 ? `
+        <div class="disclaimer">⚠ ${badCount === 1 ? "L'audience " + r.badAudiences[0] + " déteste" : "Les audiences " + r.badAudiences.join(", ") + " détestent"} le genre « ${r.genre} ».</div>
       ` : "";
       return `
         <div class="result-row">
